@@ -10,7 +10,6 @@ spec:
   forProvider:
     region: us-west-2
     cidrBlock: 10.100.0.0/16
-    enableDnsHostnames: true
     tags:
       environment: prod
       team: platform
