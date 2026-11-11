@@ -1,0 +1,33 @@
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: VPC
+metadata:
+  name: shared-services
+  namespace: platform
+spec:
+  providerConfigRef:
+    kind: ClusterProviderConfig
+    name: default
+  forProvider:
+    region: us-west-2
+    cidrBlock: 10.100.0.0/16
+    enableDnsHostnames: true
+    tags:
+      environment: prod
+      team: platform
+      cost-center: platform
+---
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: shared-services-subnet
+  namespace: platform
+spec:
+  providerConfigRef:
+    kind: ClusterProviderConfig
+    name: default
+  forProvider:
+    region: us-west-2
+    vpcIdRef:
+      name: shared-services
+    cidrBlock: 10.100.1.0/24
+    availabilityZone: us-west-2a

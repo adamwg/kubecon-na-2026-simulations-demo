@@ -1,0 +1,18 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: networks.kubecon.example.org
+  labels:
+    kubecon.example.org/templating: function
+spec:
+  compositeTypeRef:
+    apiVersion: kubecon.example.org/v1alpha1
+    kind: Network
+  mode: Pipeline
+  pipeline:
+    - step: compose-network
+      functionRef:
+        name: kubecon-networkcompose
+    - step: automatically-detect-ready-composed-resources
+      functionRef:
+        name: crossplane-contrib-function-auto-ready

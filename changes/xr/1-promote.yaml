@@ -1,0 +1,11 @@
+apiVersion: kubecon.example.org/v1alpha1
+kind: Network
+metadata:
+  name: web
+  namespace: team-b
+spec:
+  region: us-west-2
+  vpcCidr: 10.2.0.0/16
+  subnetCidr: 10.2.1.0/24
+  availabilityZone: us-west-2b
+  environment: prod

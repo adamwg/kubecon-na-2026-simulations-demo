@@ -1,0 +1,9 @@
+{
+  "packages": {
+    "fs://apis": "f0314555a07b11c02a2381905e57aa48222a00d327eaf4f0d6d2900a7e46d640",
+    "xpkg://xpkg.crossplane.io/crossplane-contrib/function-auto-ready:v0.7.3": "sha256:cce8799e19a8f25fb84e1f8dd8855021fdbe8cd7a12a5c22a0c0c345476ae9fe",
+    "xpkg://xpkg.crossplane.io/crossplane-contrib/function-go-templating:v0.13.2": "sha256:20198cb6ea5b4b8a48042343410ec9031e5ec43431d874364ecd3eac8e861290",
+    "xpkg://xpkg.crossplane.io/crossplane-contrib/provider-aws-ec2:v2.9.0": "sha256:e5c093671479fa349bc8e08ddea44ecaaa2f50ae5d586191b38127a101de5330",
+    "xpkg://xpkg.crossplane.io/crossplane-contrib/provider-family-aws:v2.9.0": "sha256:4b426b75d6c2b5cbc3270b4c2423c81cfd0ce7e7a7f5f02d2af305ba76944505"
+  }
+}

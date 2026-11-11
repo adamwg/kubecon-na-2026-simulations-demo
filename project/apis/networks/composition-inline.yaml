@@ -1,0 +1,75 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: networks-inline.kubecon.example.org
+  labels:
+    kubecon.example.org/templating: inline
+spec:
+  compositeTypeRef:
+    apiVersion: kubecon.example.org/v1alpha1
+    kind: Network
+  mode: Pipeline
+  pipeline:
+    - step: compose-network
+      functionRef:
+        name: crossplane-contrib-function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{- $xr := .observed.composite.resource }}
+            {{- $vpcId := dig "resources" "vpc" "resource" "status" "atProvider" "id" "" .observed }}
+            ---
+            apiVersion: ec2.aws.m.upbound.io/v1beta1
+            kind: VPC
+            metadata:
+              annotations:
+                gotemplating.fn.crossplane.io/composition-resource-name: vpc
+            spec:
+              forProvider:
+                region: {{ $xr.spec.region }}
+                cidrBlock: {{ $xr.spec.vpcCidr }}
+                tags:
+                  environment: {{ $xr.spec.environment }}
+                  team: {{ $xr.metadata.namespace }}
+            {{- /* The subnet and security group set vpcId directly from the
+                   observed VPC rather than through a selector, so a render is
+                   deterministic and the provider plan sees a resolved value
+                   instead of an unresolved reference. */}}
+            {{- if $vpcId }}
+            ---
+            apiVersion: ec2.aws.m.upbound.io/v1beta1
+            kind: Subnet
+            metadata:
+              annotations:
+                gotemplating.fn.crossplane.io/composition-resource-name: subnet
+            spec:
+              forProvider:
+                region: {{ $xr.spec.region }}
+                vpcId: {{ $vpcId }}
+                cidrBlock: {{ $xr.spec.subnetCidr }}
+                availabilityZone: {{ $xr.spec.availabilityZone }}
+                tags:
+                  environment: {{ $xr.spec.environment }}
+                  team: {{ $xr.metadata.namespace }}
+            ---
+            apiVersion: ec2.aws.m.upbound.io/v1beta1
+            kind: SecurityGroup
+            metadata:
+              annotations:
+                gotemplating.fn.crossplane.io/composition-resource-name: sg
+            spec:
+              forProvider:
+                region: {{ $xr.spec.region }}
+                vpcId: {{ $vpcId }}
+                name: {{ $xr.metadata.namespace }}-{{ $xr.metadata.name }}
+                description: Managed by Crossplane
+                tags:
+                  environment: {{ $xr.spec.environment }}
+                  team: {{ $xr.metadata.namespace }}
+            {{- end }}
+    - step: automatically-detect-ready-composed-resources
+      functionRef:
+        name: crossplane-contrib-function-auto-ready

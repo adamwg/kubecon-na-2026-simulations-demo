@@ -1,0 +1,64 @@
+# Three team networks. team-a and team-b follow Composition updates
+# automatically; team-c is pinned to the CompositionRevision it was created with
+# (Manual update policy), so a Composition-only change defers for it.
+#
+# team-a and team-c use the default Composition (embedded function). team-b
+# selects the inline-templating Composition with a compositionSelector.
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-a
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-b
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-c
+---
+apiVersion: kubecon.example.org/v1alpha1
+kind: Network
+metadata:
+  name: web
+  namespace: team-a
+spec:
+  region: us-west-2
+  vpcCidr: 10.1.0.0/16
+  subnetCidr: 10.1.1.0/24
+  availabilityZone: us-west-2a
+  environment: dev
+---
+apiVersion: kubecon.example.org/v1alpha1
+kind: Network
+metadata:
+  name: web
+  namespace: team-b
+spec:
+  crossplane:
+    compositionSelector:
+      matchLabels:
+        kubecon.example.org/templating: inline
+  region: us-west-2
+  vpcCidr: 10.2.0.0/16
+  subnetCidr: 10.2.1.0/24
+  availabilityZone: us-west-2b
+  environment: dev
+---
+apiVersion: kubecon.example.org/v1alpha1
+kind: Network
+metadata:
+  name: web
+  namespace: team-c
+spec:
+  crossplane:
+    compositionUpdatePolicy: Manual
+  region: us-west-2
+  vpcCidr: 10.3.0.0/16
+  subnetCidr: 10.3.1.0/24
+  availabilityZone: us-west-2c
+  environment: prod

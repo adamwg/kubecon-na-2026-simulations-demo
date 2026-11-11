@@ -1,0 +1,42 @@
+apiVersion: apiextensions.crossplane.io/v2
+kind: CompositeResourceDefinition
+metadata:
+  name: networks.kubecon.example.org
+spec:
+  group: kubecon.example.org
+  names:
+    kind: Network
+    plural: networks
+  scope: Namespaced
+  # Two Compositions serve this XRD. XRs without a compositionSelector or
+  # compositionRef use the embedded-function Composition.
+  defaultCompositionRef:
+    name: networks.kubecon.example.org
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required: [region, vpcCidr, subnetCidr, availabilityZone]
+              properties:
+                region:
+                  type: string
+                  description: AWS region for every resource in the network.
+                vpcCidr:
+                  type: string
+                  description: CIDR block of the VPC.
+                subnetCidr:
+                  type: string
+                  description: CIDR block of the subnet. Must sit inside vpcCidr.
+                availabilityZone:
+                  type: string
+                  description: Availability zone of the subnet.
+                environment:
+                  type: string
+                  default: dev
+                  description: Value of the environment tag on every resource.

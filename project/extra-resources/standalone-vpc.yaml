@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform
+---
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: VPC
+metadata:
+  name: shared-services
+  namespace: platform
+spec:
+  providerConfigRef:
+    kind: ClusterProviderConfig
+    name: default
+  forProvider:
+    region: us-west-2
+    cidrBlock: 10.100.0.0/16
+    tags:
+      environment: prod
+      team: platform
